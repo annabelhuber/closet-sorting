@@ -3,6 +3,7 @@
 import java.util.Stack;
 import java.util.ArrayList;
 import java.lang.reflect.Parameter;
+import java.util.Optional;
 import java.util.*;
 
 
@@ -34,6 +35,17 @@ public class Closet{
 
     }
 
+    public void addPants(String color, String brand, String size, String material, String rise, 
+    String length, String style, String misc, String location){
+    //adds Pants to a sub-list of only Pants
+    //(repeated for each child of Article class)
+    Pants tempPants = new Pants (color, brand, size, material, rise, 
+    length, style, misc, location);
+
+    this.myPants.add(tempPants);
+
+}
+
     public int findArticle(Object o){
         //finds specific article in specified list
         int idx = myCloset.indexOf(o);
@@ -51,184 +63,199 @@ public class Closet{
 
     }
 
-    // public List iterator(){
-    //     System.out.println("starting iter");
-    //     System.out.println(c);
-    //     List l = new ArrayList<>();
-    //     ListIterator it = c.listIterator();
+    //duplicate functions with different parameters
+    //add a function that combines shirts+pants
 
-    //     while (it.hasNext()){
-    //         System.out.println(it.next());
-    //         l.add(it.next());
-    //     }
+    public ArrayList<Shirt> searchShirts(String attribute, String category){
+        //duplicate searchShirt function with optional parameter "category" 
+        String att = attribute.toUpperCase();
+        System.out.println("attribute " + att);
 
-    //     return l;
-    // }
+        ArrayList<Shirt> l = myShirts;
+        ArrayList<Shirt> subL = new ArrayList<>();
 
-    public ArrayList searchCloset(Object obj, String cat, String att){
-        // ArrayList l;
-        ArrayList subL = new ArrayList<>();
-        
-        //determine which list to be searching through
-        if (obj instanceof Shirt){
-            ArrayList<Shirt> l = myShirts;
-                    //if the category is undefined
-            if (cat == null){
-
-                for (Shirt a : l){
-                    //Shirt tempArt = l.get(i);
-                    ArrayList<String> descrip = a.getDescriptors();
-
-                    for(String s : descrip){
-                        //loop through each article to see if it matches
-                        if (s == att){
-                            subL.add(a);
-                            break;
-                        }
-                    }
-                }
-            } else{
-                //using the given category
-                int idx = 0;
-                Shirt base = l.get(0);
-                ArrayList<String> params = base.getDescriptors();
-                for (String sNew : params){
-                    if (cat == sNew){
-                        //once we find the given cateogry in the parameter list
-                        idx = params.indexOf(sNew);
-                    }
-                }
-                //loop through Articles in l looking only at the given category
-                for (Shirt i : l){
-                    //Shirt tempArt = l.get(i);
-                    ArrayList descrip = i.getDescriptors();
-                    if (att == descrip.get(idx)){
-                        //if the attribute matches in the given category
-                        subL.add(i);
-                    }
-                }
-
-            }
+        String cat = category.toUpperCase();
+        System.out.println("category " + cat);
             
-        } else if (obj instanceof Pants){
-            ArrayList<Pants> l = myPants;
+            //using the given category
+            //int idx = 0;
+            //use the first shirt in the list to find the categories
+            Shirt base = l.get(0);
+            ArrayList<String> params = base.getCategories();
+            for (String sNew : params){
+                if (cat.equals(sNew)){
+                    //once we find the given cateogry in the parameter list
+                    category = cat;
+                }
+            }
 
-                //if the category is undefined
-                if (cat == null){
-    
-                    for (Pants a : l){
-                        //Pants tempArt = l.get(i);
-                        ArrayList<String> descrip = a.getDescriptors();
-    
+            for (Shirt i : l){
+                //loop through all shirts
+                if (i.getOneDescriptor(category).equals(att)){
+                    subL.add(i);
+                }
+            }
+
+        return subL;
+    }
+
+
+
+    public ArrayList<Shirt> searchShirts(String attribute){
+        //Search through shirts WITHOUT a given category
+            //change the parameter attribute to all caps for comparison
+            String att = attribute.toUpperCase();
+            System.out.println("attribute " + att);
+
+            //define the list we're looking at as myShirts
+            ArrayList<Shirt> l = myShirts;
+            //new arraylist subL to hold in qualifying Shirts
+            ArrayList<Shirt> subL = new ArrayList<>();
+
+            //loop through all shirts to see if any parameters given match attribute
+                for (Shirt a : l){
+                    //get the descriptors (parameters) for each article
+                    ArrayList<String> descrip = a.getDescriptors();
+                    
                         for(String s : descrip){
-                            //loop through each article to see if it matches
-                            if (s == att){
+                            //loop through each article's parameters to see if it matches
+                            //System.out.println(s + att);
+                            if (s.equals(att)){
+                                
                                 subL.add(a);
                                 break;
                             }
                         }
                     }
-                } else{
+            
+
+            return subL;
+        }
+
+
+    public ArrayList<Pants> searchPants(String attribute){
+        //search Pants without a category
+
+        //change the parameter attribute to all caps for comparison
+        String att = attribute.toUpperCase();
+    
+        ArrayList<Pants> l = myPants;
+        ArrayList<Pants> subL = new ArrayList<>();
+
+
+            for (Pants a : l){
+                //Shirt tempArt = l.get(i);
+                ArrayList<String> descrip = a.getDescriptors();
+    
+                        for(String s : descrip){
+                            //loop through each article to see if it matches
+                            if (s.equals(att)){
+                                subL.add(a);
+                                break;
+                            }
+                        }
+                    }
+            
+
+            return subL;
+        }
+
+
+
+        public ArrayList<Pants> searchPants(String attribute, String category){
+            //search pants WITH a category
+
+            String att = attribute.toUpperCase();
+            String cat = category.toUpperCase();
+
+            ArrayList<Pants> l = myPants;
+            ArrayList<Pants> subL = new ArrayList<>();
+    
                     //using the given category
-                    int idx = 0;
                     Pants base = l.get(0);
-                    ArrayList<String> params = base.getDescriptors();
+                    ArrayList<String> params = base.getCategories();
                     for (String sNew : params){
-                        if (cat == sNew){
+                        if (cat.equals(sNew)){
                             //once we find the given cateogry in the parameter list
-                            idx = params.indexOf(sNew);
+                            category = cat;
                         }
                     }
                     //loop through Articles in l looking only at the given category
                     for (Pants i : l){
-                        ArrayList descrip = i.getDescriptors();
-                        //Pants tempArt = l.get(i);
-                        if (att == descrip.get(idx)){
+                        if (i.getOneDescriptor(category).equals(att)){
                             //if the attribute matches in the given category
                             subL.add(i);
                         }
                     }
     
-                }
+                return subL;
+            }
+
+
+    public ArrayList searchCloset(String attribute){
+        //searches through all articles for given attribute
+        ArrayList tempList = new ArrayList<>();
+
+        ArrayList<Shirt> tempShirts = searchShirts(attribute);
+        ArrayList<Pants> tempPants = searchPants(attribute);
+
+        tempList.addAll(tempShirts);
+        tempList.addAll(tempPants);
+
+        return tempList;
+
+    }
+
+
+    public ArrayList searchCloset(String attribute, String category){
+        //searches through all articles for given attribute WITH a category
+        ArrayList tempList = new ArrayList<>();
+
+        ArrayList<Shirt> tempShirts = searchShirts(attribute, category);
+        ArrayList<Pants> tempPants = searchPants(attribute, category);
+
+        tempList.addAll(tempShirts);
+        tempList.addAll(tempPants);
+
+        return tempList;
+
+    }
+
+
+    public void showShirts(){
+        //displays all the shirts in the closet and the total number
+
+        for (Article s : myShirts){
+            s.display();
         }
-        // } else {
-        //     //if class type is undetermined/not valid
-        //     l.addAll(myShirts);
-        //     l.addAll(myPants);
+
+        System.out.println("Total Shirts: " + myShirts.size());
+    }
+
+
+    public void showPants(){
+        //displays all the pants in the closet and the total number
+
+        for (Article s : myPants){
+            s.display();
+        }
+
+        System.out.println("Total Pants: " + myPants.size());
+    }
+
+
+    public void showAll(){
+        //displays all the articles in the closet and the total number
+
+        this.showShirts();
+        this.showPants();
+
+        int num = myShirts.size() + myPants.size();
+
+        System.out.println("Total: " + num);
+    }
+                
             
-        // }
-
-        // //if the category is undefined
-        // if (cat == null){
-
-        //     for (Article a : l){
-        //         Article tempArt = l.get(i);
-        //         ArrayList descrip = tempArt.getDescriptors();
-
-        //         for(String s : descrip){
-        //             //loop through each article to see if it matches
-        //             if (s == att){
-        //                 subL.add(tempArt);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // } else{
-        //     //using the given category
-        //     int idx;
-        //     ArrayList params = l.get(0);
-        //     for (String sNew : params){
-        //         if (cat == sNew){
-        //             //once we find the given cateogry in the parameter list
-        //             idx = params.indexOf(sNew);
-        //         }
-        //     }
-        //     //loop through Articles in l looking only at the given category
-        //     for (int i = 0; i < l.size(); i++){
-        //         tempArt = l.get(i);
-        //         ArrayList descrip = tempArt.getDescriptors();
-        //         if (att == descrip.get(idx)){
-        //             //if the attribute matches in the given category
-        //             subL.add(tempArt);
-        //         }
-        //     }
-
-        // }
-
-        return subL;
-
-        }
-
-
-
-    // public List articleList(Object art){
-    //     //sort closet by article
-
-    //     //create a temp stack of items in specified class
-    //     List<art> tempList = new ArrayList<>();
-
-        
-    //     for (Object obj : myCloset){
-    //         //loop through closet
-    //         if (obj.getClass() == art){
-    //             //if obj is the correct class, push onto temp stack
-    //             tempStack.push(obj);
-    //         }
-    //     }
-    //     //return the new stack of items of a certain class
-    //     return tempStack;
-    // }
-
-
-    // public Stack searchStack(Object item, String param, String att){
-    //     //sorts articles by their attributes
-    //     if (item != null){
-    //         //if article type is specified
-    //         Stack<item> tempCloset = new Stack<>();
-
-    //     }
-        
-    // }
 
 
     public static void main(String[] args) {
@@ -245,32 +272,39 @@ public class Closet{
             // myCloset.add (new Shirt ("color", "brand", "size", "shirtLength", "sleeveLength", "misc", "location"));
             // myCloset.add ( new Shirt ("black", "zara", "M", "cropped", "tank", "lacy", "drawer"));
 
-        s.addShirt("color", "brand", "size", "shirtLength", "sleeveLength", "misc", "location");
+        //s.addShirt("color", "brand", "size", "shirtLength", "sleeveLength", "misc", "location");
         s.addShirt("black", "zara", "M", "cropped", "tank", "lacy", "drawer");
+        s.addShirt("white", "princess polly", "M", "cropped", "tee", "tie front", "underBed");
+        s.addShirt("blue", "zara", "M", "mid", "tube", "denim", "hanging");
+        s.addShirt("orange", "urban outfitters", "M", "cropped", "tank", "ripped", "drawer");
+        s.addShirt("blue", "aritzia", "M", "cropped", "tee", "tie front", "drawer");
 
-        for (Shirt a : s.myShirts){
-            a.display();
-        }
-             
-        // c.combineLists(s.myShirts);
+        s.addPants("blue", "zara", "6", "denim", "high", "long", "baggy", "ripped", "drawer");
 
-        // //System.out.println("C:" + c);
-
-        // for (Article b : c.myCloset){
-        //     b.display();
+        s.showAll();
+        // for (Shirt a : s.myShirts){
+        //     a.display();
         // }
 
-      
-        // show everything in the closet
+        // for (Pants p : s.myPants){
+        //     p.display();
+        // }
 
-        //List iter = s.iterator();
+        // c.combineLists(s.myShirts);
+        // c.combineLists(s.myPants);
+
+        // for (Article check : c){
+        //     check.display();
+        // }
+
+
+        // ArrayList<Shirt> search = s.searchCloset("BLUE");
        
-    //     for (Article obj : iter){
-    //         //display shirts stored in the closet
-    //         obj.display();
-    //         System.out.print("Index: " + myCloset.findArticle(obj) + "\n");
-    //         //counter++;
-    //     }
+        // System.out.println("Search results for BLue: ");
+        // for (Article b : search){
+        //     b.display();
+        // }
+             
     }
 
 

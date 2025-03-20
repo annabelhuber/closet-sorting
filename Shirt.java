@@ -17,8 +17,8 @@ class Shirt extends Article{
         super(color, brand, size, misc, location);
 
         //constructor to initialize Shirt
-        this.shirtLength = shirtLength;
-        this.sleeveLength = sleeveLength;
+        this.shirtLength = shirtLength.toUpperCase();
+        this.sleeveLength = sleeveLength.toUpperCase();
 
         this.myList = myList;
 
@@ -29,6 +29,24 @@ class Shirt extends Article{
         System.out.println( "SHIRT: ");
         System.out.println("Color: " + color + ", Brand: " + brand  + ", Size: " + size  + ", Misc Details: "
         + misc + ", Location: " + location +  ", Shirt Length: " + shirtLength + ", Sleeve Length: " + sleeveLength);
+
+    }
+
+    public ArrayList<String> getCategories(){
+        //returns the categories for Shirt (override from Article)
+
+        ArrayList<String> myCategories = new ArrayList<>();
+
+        //add all the parameters as strings
+        myCategories.add("COLOR");
+        myCategories.add("BRAND");
+        myCategories.add("SIZE");
+        myCategories.add("MISC");
+        myCategories.add("LOCATION");
+        myCategories.add("SHIRTLENGTH");
+        myCategories.add("SLEEVELENGTH");
+
+        return myCategories;
 
     }
 
@@ -44,6 +62,33 @@ class Shirt extends Article{
         myList.add(sleeveLength);
 
         return myList;
+    }
+
+
+    public String getOneDescriptor(String parameter){
+        //return the value for the given parameter (override from Article)
+        String p = parameter.toUpperCase();
+
+        if (p.equals("COLOR")){
+            return this.color;
+        } else if (p.equals("BRAND")){
+            return this.brand;
+        } else if (p.equals("SIZE")){
+            return this.size;
+        } else if (p.equals("MISC")){
+            return this.misc;
+        } else if (p.equals("LOCATION")){
+            return this.location;
+        }  else if (p.equals("SHIRTLENGTH")){
+            return this.shirtLength;
+        } else if (p.equals("SLEEVELENGTH")){
+            return this.sleeveLength;
+        }
+        
+        
+        else {
+            return "ERROR: Parameter not Found";
+        }
     }
 
 

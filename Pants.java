@@ -16,10 +16,10 @@ class Pants extends Article{
 
         super(color, brand, size, misc, location);
 
-        this.rise = rise;
-        this.length = length;
-        this.style = style;
-        this.material = material;
+        this.rise = rise.toUpperCase();
+        this.length = length.toUpperCase();
+        this.style = style.toUpperCase();
+        this.material = material.toUpperCase();
 
         this.myList = myList;
 
@@ -31,6 +31,26 @@ class Pants extends Article{
         System.out.println("Color: " + color + ", Brand: " + brand  + ", Size: " + size  + ", Misc Details: "
         + misc + ", Location: " + location + ", Material: " + material + ", Rise: " + rise + ", Length: "
         + length + ", Style: " + style);
+
+    }
+
+
+    public ArrayList<String> getCategories(){
+        //returns the categories for Pants (override from Article)
+
+        ArrayList<String> myCategories = new ArrayList<>();
+
+        myCategories.add("COLOR");
+        myCategories.add("BRAND");
+        myCategories.add("SIZE");
+        myCategories.add("MISC");
+        myCategories.add("LOCATION");
+        myCategories.add("RISE");
+        myCategories.add("LENGTH");
+        myCategories.add("STYLE");
+        myCategories.add("MATERIAL");
+
+        return myCategories;
 
     }
 
@@ -48,6 +68,36 @@ class Pants extends Article{
         myList.add(length);
 
         return myList;
+    }
+
+    public String getOneDescriptor(String parameter){
+        //return the value for the given parameter (override from Article)
+        String p = parameter.toUpperCase();
+
+        if (p.equals("COLOR")){
+            return this.color;
+        } else if (p.equals("BRAND")){
+            return this.brand;
+        } else if (p.equals("SIZE")){
+            return this.size;
+        } else if (p.equals("MISC")){
+            return this.misc;
+        } else if (p.equals("LOCATION")){
+            return this.location;
+        }  else if (p.equals("MATERIAL")){
+            return this.material;
+        } else if (p.equals("RISE")){
+            return this.rise;
+        } else if (p.equals("STYLE")){
+            return this.style;
+        } else if (p.equals("LENGTH")){
+            return this.length;
+        }
+        
+        
+        else {
+            return "ERROR: Parameter not Found";
+        }
     }
 
 }
