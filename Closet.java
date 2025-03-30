@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.lang.reflect.Parameter;
 import java.util.Optional;
 import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileReader;
 
 
 public class Closet{
@@ -21,6 +24,46 @@ public class Closet{
         //this.myCloset = new ArrayList<>();
     }
 
+
+    public void readCSV(String filename){
+        //read the CSV file and add all items to the closet
+
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))){
+            String line;
+
+            //skip first line
+            br.readLine();
+
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                ArrayList<String> atts = new ArrayList<>();
+
+                for (int i = 0; i< data.length; i++){
+                    System.out.println("data length " + data.length);
+                    if (!data[i].equals("NA")){
+                        //if the entry is given
+                        atts.add(data[i]);
+                        }
+                    }
+
+                if (data[0].equals("SHIRT")){
+                    //if the article is a shirt
+                    atts.remove(0);
+                    addShirt(atts);
+                } else if (data[0].equals("PANTS")){
+                    //if the article is pants
+                    atts.remove(0);
+                    addPants(atts);
+                } else {
+                    System.out.println("ERR: Invalid Article Type");
+                }
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //need a set (change) function
     //need a combine function to show all closet items (addAll)
 
@@ -35,6 +78,29 @@ public class Closet{
 
     }
 
+
+    public void addShirt(ArrayList<String> attributes){
+        //duplicate of addShirt for an arraylist instead of many strings
+        //adds shirt to a sub-list of only shirts
+        //(repeated for each child of Article class)
+
+        String color = attributes.get(0);
+        String brand = attributes.get(1);
+        String size = attributes.get(2);
+        String sleeveLength = attributes.get(5);
+        String shirtLength = attributes.get(6);
+        String misc = attributes.get(3);
+        String location = attributes.get(4);
+
+        Shirt tempShirt = new Shirt (color, brand, size, shirtLength, 
+        sleeveLength, misc, location);
+
+        this.myShirts.add(tempShirt);
+
+    }
+
+
+
     public void addPants(String color, String brand, String size, String material, String rise, 
     String length, String style, String misc, String location){
     //adds Pants to a sub-list of only Pants
@@ -44,7 +110,30 @@ public class Closet{
 
     this.myPants.add(tempPants);
 
-}
+    }
+
+
+    public void addPants(ArrayList<String> attributes){
+        //duplicate of addShirt for an arraylist instead of many strings
+        //adds shirt to a sub-list of only shirts
+        //(repeated for each child of Article class)
+
+        String color = attributes.get(0);
+        String brand = attributes.get(1);
+        String size = attributes.get(2);
+        String misc = attributes.get(3);
+        String location = attributes.get(4);
+        String material= attributes.get(8);
+        String rise = attributes.get(5);
+        String length = attributes.get(6);
+        String style = attributes.get(7);
+        
+        Pants tempPants = new Pants (color, brand, size, material, rise, 
+        length, style, misc, location);
+
+        this.myPants.add(tempPants);
+
+    }
 
     public int findArticle(Object o){
         //finds specific article in specified list
@@ -254,6 +343,51 @@ public class Closet{
 
         System.out.println("Total: " + num);
     }
+
+
+    public ArrayList getShirts(){
+
+        ArrayList list = new ArrayList<>();
+
+        for (Shirt s : myShirts){
+            ArrayList<String> newList = s.getDescriptors();
+            list.add(newList);
+        }
+
+        return list;
+
+    }
+
+    public ArrayList getPants(){
+
+        ArrayList list = new ArrayList<>();
+
+        for (Pants p : myPants){
+            ArrayList<String> newList = p.getDescriptors();
+            list.add(newList);
+        }
+
+        return list;
+
+    }
+
+    public ArrayList getAll(){
+    
+        ArrayList list = new ArrayList<>();
+
+        for (Shirt s : myShirts){
+            ArrayList<String> newList = s.getDescriptors();
+            list.add(newList);
+        }
+        for (Pants p : myPants){
+            ArrayList<String> newList = p.getDescriptors();
+            list.add(newList);
+        }
+
+        return list;
+
+
+    }
                 
             
 
@@ -273,13 +407,16 @@ public class Closet{
             // myCloset.add ( new Shirt ("black", "zara", "M", "cropped", "tank", "lacy", "drawer"));
 
         //s.addShirt("color", "brand", "size", "shirtLength", "sleeveLength", "misc", "location");
-        s.addShirt("black", "zara", "M", "cropped", "tank", "lacy", "drawer");
-        s.addShirt("white", "princess polly", "M", "cropped", "tee", "tie front", "underBed");
-        s.addShirt("blue", "zara", "M", "mid", "tube", "denim", "hanging");
-        s.addShirt("orange", "urban outfitters", "M", "cropped", "tank", "ripped", "drawer");
-        s.addShirt("blue", "aritzia", "M", "cropped", "tee", "tie front", "drawer");
+        // s.addShirt("black", "zara", "M", "cropped", "tank", "lacy", "drawer");
+        // s.addShirt("white", "princess polly", "M", "cropped", "tee", "tie front", "underBed");
+        // s.addShirt("blue", "zara", "M", "mid", "tube", "denim", "hanging");
+        // s.addShirt("orange", "urban outfitters", "M", "cropped", "tank", "ripped", "drawer");
+        // s.addShirt("blue", "aritzia", "M", "cropped", "tee", "tie front", "drawer");
 
-        s.addPants("blue", "zara", "6", "denim", "high", "long", "baggy", "ripped", "drawer");
+        // s.addPants("blue", "zara", "6", "denim", "high", "long", "baggy", "ripped", "drawer");
+
+
+        s.readCSV("testcloset.csv");
 
         s.showAll();
         // for (Shirt a : s.myShirts){
