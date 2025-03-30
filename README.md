@@ -9,3 +9,6 @@ I'm beginning to write code in order to create an inventory, search, categorize,
 *GUI* is the interface (using Java Swing) and is very much in the works at the moment; I am ironing out the technical problems before I adjust the look of it, so please excuse the appearance.
 
 Finally, *CSVReader* is the code written in order to store the data used by the aforementioned classes in a CSV file.
+
+
+*NOTE: I wrote the bare bones of this file in Python before converting to Java for easier GUI use, but the Python files are still in the repository*
