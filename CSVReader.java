@@ -14,6 +14,7 @@ public class CSVReader{
 
     String filename;
     String filepath;
+    Closet c;
 
 
     public CSVReader(String filename){
@@ -25,6 +26,10 @@ public class CSVReader{
         if(!fileExists()){
             this.createNewCSV(this.filepath);
         }
+
+        this.c = new Closet();
+        c.readCSV(filepath);
+
     }
 
 
@@ -78,7 +83,7 @@ public class CSVReader{
     }
 
 
-    public void addShirtCSV(String[] atts){
+    public boolean addShirtCSV(String[] atts){
         //add a shirt using addArticleCSV from info from GUI fields
         //String filepath = csvName(filename);
 
@@ -90,12 +95,15 @@ public class CSVReader{
             s[i+1] = atts[i];
         }
 
-        this.addArticleCSV(s);
+        if (this.addArticleCSV(s)){
+            return true;
+        }
+        return false;
     }
 
 
 
-    public void addPantsCSV(String[] atts){
+    public boolean addPantsCSV(String[] atts){
         //add pants using addArticleCSV from info from GUI fields
         //String filepath = csvName(filename);
         
@@ -109,17 +117,24 @@ public class CSVReader{
             s[j+3] = atts[j];
         }
 
-        this.addArticleCSV(s);
+        if (this.addArticleCSV(s)){
+            return true;
+        } 
+        return false;
     }
 
 
-    public void addArticleCSV(String[] attributes){
+    public boolean addArticleCSV(String[] attributes){
+        //adds article to the CSV file
+        //returns FALSE if the article cannot be added
+        //returns TRUE once added
 
-        
-        //File csvfile = new File(filepath);
 
         if (!this.checkDuplicates(attributes)){
+            //if article already exists in CSV
             System.out.println("Article already exists in " + filename);
+            return false;
+
         } else {
 
             String[] att = parseStrings(attributes);
@@ -135,16 +150,12 @@ public class CSVReader{
 
             writer.close();
 
-            // if (Desktop.isDesktopSupported()) {
-            //     Desktop.getDesktop().open(csvfile);
-            // } else {
-            //     System.out.println("Desktop operations are not supported.");
-            // }
-
         } catch (IOException e) {
             System.out.println("ERR: Could not add data to file: " + filename);
+            return false;
         }
         }
+    return true;
 
     }
 
@@ -248,26 +259,41 @@ public class CSVReader{
         return tempVar;
     }
 
-    //need a function to change articles
-    //need a function to delete articles
+
 
     public ArrayList displayArticles(){
-
-        //System.out.println("begin displayArticles");
-
-        Closet c = new Closet();
-        //System.out.println("made closet");
-        c.readCSV(filename);
-
-        //System.out.println("read CSV");
+        // function to send the data from CSV to a closet object
+        //returns an arraylist of the Articles stored
   
         ArrayList list = c.getAll();
-        //System.out.println("got all");
-
-        //System.out.println("begin displayArticles");
 
         return list;
 
+    }
+
+
+    public ArrayList displaySearch(String attribute){
+        //searches through the closet and returns the qualifying articles
+        //input: attribute
+
+        ArrayList<Article> searched = c.searchCloset(attribute);
+
+        ArrayList results = c.getAllSearch(searched);
+
+        return results;
+
+    }
+
+
+    public ArrayList displaySearch(String attribute, String category, String articleType){
+        //searches through the closet and returns the qualifying articles
+        //input: attribute, category
+
+        ArrayList<Article> searched = c.searchCloset(attribute, category, articleType);
+
+        ArrayList results = c.getAllSearch(searched);
+
+        return results;
     }
 
 
@@ -290,7 +316,6 @@ public class CSVReader{
 
     public void deleteLine(int index){
         //deletes a line of a CSV
-        // file = file;
 
         File input = new File(filepath);
         File temp = new File("temp.csv");
@@ -309,20 +334,11 @@ public class CSVReader{
 
                 if (lineCount != index){
                     if (!currentLine.isEmpty()){
+
                         writer.write("\n");
-                        writer.write(currentLine);
-                        
-                        // System.out.println("line count pre: " + lineCount);
-                        
+                        writer.write(currentLine); 
                     } 
-                    // System.out.println("line count post: " + lineCount);
-                // } else {
-                //     System.out.println("line count pre ELSE: " + lineCount);
-                //     lineCount++;
-                //     System.out.println("line count post ELSE: " + lineCount);
-                // }
-                
-                
+
                 } lineCount++;
             }
 
@@ -334,18 +350,60 @@ public class CSVReader{
             input.delete();
             temp.renameTo(new File(filepath));
 
-            //this.openCSV();
-
-
-            // if (Desktop.isDesktopSupported()) {
-            //     Desktop.getDesktop().open(input);
-            // } else {
-            //     System.out.println("Desktop operations are not supported.");
-            // }
-
-
-
         }
+
+    
+    public void replaceLine(int index, String[] attributes){
+        //takes the index of the line to be replaced and the data to fill instead
+        //almost same process as deleteLine(), just adding new line instead of removing
+
+        File input = new File(filepath);
+        File temp = new File("temp.csv");
+
+        String[] att = parseStrings(attributes);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(input))){
+
+            FileWriter writer = new FileWriter(temp);
+
+            String currentLine;
+            int lineCount = 0;
+
+            //write the header
+            writer.write(br.readLine());
+
+            while ((currentLine = br.readLine()) != null) {
+
+                if (lineCount != index){
+                    if (!currentLine.isEmpty()){
+
+                        writer.write("\n");
+                        writer.write(currentLine); 
+                    } 
+                    lineCount++;
+                } else {
+                    //once hit the desired line index
+                    //write the new array
+
+                    writer.write("\n");
+
+                    for (String s : att){
+                        writer.write(s);
+
+                    }
+                lineCount++;
+            }
+
+            writer.close();
+            }
+         } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            input.delete();
+            temp.renameTo(new File(filepath));
+        
+    }
     
 
 
@@ -362,20 +420,22 @@ public class CSVReader{
         String[] shirt3 = {"SHIRT", "black", "urban outfitters", "M", "lace trim", "drawer", "cropped", "tank"};
         String[] pant3 = {"PANTS", "black", "abercrombie", "28", "90's", "Mike's", "low", "long", "baggy", "denim"};
         String[] pant1 = {"PANTS", "blue", "zara", "6", "ripped", "drawer", "high", "long", "baggy", "denim"};
-
+        String[] pant4 = {"PANTS", "black", "urban outfitters", "M", "ies frans", "mike's", "high", "long", "sweatpants", "cotton"};
 
         CSVReader myCSV = new CSVReader("testing");
 
         // myCSV.addArticleCSV(pant1);
         // myCSV.addArticleCSV(pant2);
-        // myCSV.addArticleCSV(pant3);
-        myCSV.addArticleCSV(shirt1);
+        //System.out.println(myCSV.addArticleCSV(pant4));
+        //myCSV.addArticleCSV(shirt1);
         // myCSV.addArticleCSV(shirt2);
         // myCSV.addArticleCSV(shirt3);
 
         //myCSV.deleteLine(3);
 
-        myCSV.openCSV();
+        //myCSV.openCSV();
+
+        //System.out.println(myCSV.displayArticles());
 
 
         

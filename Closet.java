@@ -25,11 +25,11 @@ public class Closet{
     }
 
 
-    public void readCSV(String filename){
+    public void readCSV(String filepath){
         //read the CSV file and add all items to the closet
 
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))){
+        try (BufferedReader br = new BufferedReader(new FileReader(filepath))){
             String line;
 
             //skip first line
@@ -40,10 +40,9 @@ public class Closet{
                 ArrayList<String> atts = new ArrayList<>();
 
                 for (int i = 0; i< data.length; i++){
-                    System.out.println("data length " + data.length);
                     if (!data[i].equals("NA")){
                         //if the entry is given
-                        atts.add(data[i]);
+                        atts.add(data[i].toUpperCase());
                         }
                     }
 
@@ -281,7 +280,7 @@ public class Closet{
             }
 
 
-    public ArrayList searchCloset(String attribute){
+    public ArrayList<Article> searchCloset(String attribute){
         //searches through all articles for given attribute
         ArrayList tempList = new ArrayList<>();
 
@@ -296,7 +295,7 @@ public class Closet{
     }
 
 
-    public ArrayList searchCloset(String attribute, String category){
+    public ArrayList<Article> searchCloset(String attribute, String category){
         //searches through all articles for given attribute WITH a category
         ArrayList tempList = new ArrayList<>();
 
@@ -305,6 +304,51 @@ public class Closet{
 
         tempList.addAll(tempShirts);
         tempList.addAll(tempPants);
+
+        return tempList;
+
+    }
+
+
+    public ArrayList<Article> searchCloset(String attribute, String category, String articleType){
+        //searches through all articles for given attribute WITH a category
+        ArrayList tempList = new ArrayList<>();
+
+        if (articleType.equals("Shirts") && !category.equals("None")){
+            //if searching shirts with a category:
+            tempList = searchShirts(attribute, category);
+        } else if (articleType.equals("Shirts") && category.equals("None")){
+            //if searching shirts without a category
+            tempList = searchShirts(attribute);
+        }
+
+        else if (articleType.equals("Pants") && !category.equals("None")){
+            //if searching pants with a category
+            tempList = searchPants(attribute, category);
+        } else if (articleType.equals("Pants") && category.equals("None")){
+            //if searching pants without a category
+            tempList = searchPants(attribute);
+        }
+
+        else{
+            //if article type is undefined
+            if (category.equals("None")){
+                //if no given category
+                ArrayList<Shirt> tempShirts = searchShirts(attribute);
+                ArrayList<Pants> tempPants = searchPants(attribute);
+
+                tempList.addAll(tempShirts);
+                tempList.addAll(tempPants);
+
+            } else {
+                //with a given category
+                ArrayList<Shirt> tempShirts = searchShirts(attribute, category);
+                ArrayList<Pants> tempPants = searchPants(attribute, category);
+                
+                tempList.addAll(tempShirts);
+                tempList.addAll(tempPants);
+            }    
+        }
 
         return tempList;
 
@@ -345,6 +389,27 @@ public class Closet{
     }
 
 
+    // public void showAll(ArrayList list){
+    //     //displays all the articles in the given list + the total numer
+    //     int shirtCounter = 0;
+    //     int pantsCounter = 0;
+
+    //     for (Object s : list){
+
+    //         if (s.getClass().getName() == "Shirt"){
+    //             s.display();
+    //             shirtCounter++;
+    //         } else if (s.getClass().getName() == "Pants"){
+    //             s.display();
+    //             pantsCounter++;
+    //         }
+            
+    //     }
+
+    //     System.out.println("Total Shirts: " + shirtCounter + " Total Pants: " + pantsCounter);
+    // }
+
+
     public ArrayList getShirts(){
 
         ArrayList list = new ArrayList<>();
@@ -357,6 +422,7 @@ public class Closet{
         return list;
 
     }
+
 
     public ArrayList getPants(){
 
@@ -375,6 +441,8 @@ public class Closet{
     
         ArrayList list = new ArrayList<>();
 
+        System.out.println(myShirts.size());
+
         for (Shirt s : myShirts){
             ArrayList<String> newList = s.getDescriptors();
             list.add(newList);
@@ -383,6 +451,27 @@ public class Closet{
             ArrayList<String> newList = p.getDescriptors();
             list.add(newList);
         }
+
+        return list;
+
+
+    }
+
+
+    public ArrayList getAllSearch(ArrayList<Article> givenList){
+    
+        ArrayList list = new ArrayList<>();
+
+        //System.out.println(myShirts.size());
+
+        for (Article s : givenList){
+            ArrayList<String> newList = s.getDescriptors();
+            list.add(newList);
+        }
+        // for (Pants p : list){
+        //     ArrayList<String> newList = p.getDescriptors();
+        //     list.add(newList);
+        // }
 
         return list;
 
@@ -416,9 +505,17 @@ public class Closet{
         // s.addPants("blue", "zara", "6", "denim", "high", "long", "baggy", "ripped", "drawer");
 
 
-        s.readCSV("testcloset.csv");
+        s.readCSV("testing.csv");
 
-        s.showAll();
+        //s.showShirts();
+
+        ArrayList<Article> searching = s.searchCloset("black", "color");
+        
+        for (Article a : searching){
+            a.display();
+        }
+
+
         // for (Shirt a : s.myShirts){
         //     a.display();
         // }
