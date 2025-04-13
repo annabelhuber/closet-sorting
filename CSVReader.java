@@ -106,21 +106,34 @@ public class CSVReader{
     public boolean addPantsCSV(String[] atts){
         //add pants using addArticleCSV from info from GUI fields
         //String filepath = csvName(filename);
+        System.out.println("ATT LENGTH " + atts.length);
         
         String[] s = {"NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA",
-            "NA", "NA", "NA", "NA",};
+            "NA", "NA", "NA", "NA"};
         s[0] = "PANTS";
 
         for (int i = 0; i < 6; i++){
             s[i+1] = atts[i];
         } for (int j = 6; j < atts.length; j++){
-            s[j+3] = atts[j];
+            s[j+1] = atts[j];
         }
 
         if (this.addArticleCSV(s)){
             return true;
         } 
         return false;
+    }
+
+    public boolean addAnyArticleCSV(String[] attributes, String articleType){
+        //runs addPantsCSV or addShirtCSV based on the article type given
+
+        if (articleType.equals("Shirt")){
+            //if its a shirt, run & return the boolean from addShirtCSV
+            return this.addShirtCSV(attributes);
+        } else {
+            //if pants, run & return the boolean from addPantsCSV
+            return this.addPantsCSV(attributes);
+        }
     }
 
 
@@ -264,6 +277,9 @@ public class CSVReader{
     public ArrayList displayArticles(){
         // function to send the data from CSV to a closet object
         //returns an arraylist of the Articles stored
+
+        //reread the CSV in case articles were added/deleted
+        c.readCSV(filepath);
   
         ArrayList list = c.getAll();
 
@@ -276,6 +292,9 @@ public class CSVReader{
         //searches through the closet and returns the qualifying articles
         //input: attribute
 
+        //reread the CSV in case articles were added/deleted
+        c.readCSV(filepath);
+
         ArrayList<Article> searched = c.searchCloset(attribute);
 
         ArrayList results = c.getAllSearch(searched);
@@ -287,9 +306,13 @@ public class CSVReader{
 
     public ArrayList displaySearch(String attribute, String category, String articleType){
         //searches through the closet and returns the qualifying articles
-        //input: attribute, category
+        //input: attribute, category, article type
+
+        //reread the CSV in case articles were added/deleted
+        c.readCSV(filepath);
 
         ArrayList<Article> searched = c.searchCloset(attribute, category, articleType);
+        //searched.get(0).display();
 
         ArrayList results = c.getAllSearch(searched);
 
@@ -422,20 +445,33 @@ public class CSVReader{
         String[] pant1 = {"PANTS", "blue", "zara", "6", "ripped", "drawer", "high", "long", "baggy", "denim"};
         String[] pant4 = {"PANTS", "black", "urban outfitters", "M", "ies frans", "mike's", "high", "long", "sweatpants", "cotton"};
 
+        String[] shirt4 = {"SHIRT", "black", "X", "M", "Split back", "mike's", "long", "Tube"};
+        String[] shirt5 = {"SHIRT", "white", "Zara","M","Tie Front", "Drawer", "Cropped", "tee"};
+        String[] pant5 = {"PANTS", "blue", "lucky", "28", "ripped", "mike's", "low", "long", "flare", "denim"};
         CSVReader myCSV = new CSVReader("testing");
 
         // myCSV.addArticleCSV(pant1);
         // myCSV.addArticleCSV(pant2);
-        //System.out.println(myCSV.addArticleCSV(pant4));
-        //myCSV.addArticleCSV(shirt1);
+        // myCSV.addArticleCSV(shirt1);
         // myCSV.addArticleCSV(shirt2);
         // myCSV.addArticleCSV(shirt3);
+        // myCSV.addArticleCSV(shirt4);
+        // myCSV.addArticleCSV(shirt5);
+        // myCSV.addArticleCSV(pant3);
+        // myCSV.addArticleCSV(pant4);
+        //myCSV.addAnyArticleCSV(pant5, "Pants");
 
-        //myCSV.deleteLine(3);
+        //myCSV.deleteLine(9);
+        
 
-        //myCSV.openCSV();
+        //ArrayList<ArrayList> trial = myCSV.displaySearch("black", "None", "All");
+        
+        //System.out.println(trial.get(1).size());
 
-        //System.out.println(myCSV.displayArticles());
+        myCSV.openCSV();
+
+        //ArrayList<ArrayList> trial2 = myCSV.displayArticles();
+        
 
 
         

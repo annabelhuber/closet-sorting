@@ -40,6 +40,7 @@ public class Closet{
                 ArrayList<String> atts = new ArrayList<>();
 
                 for (int i = 0; i< data.length; i++){
+                    
                     if (!data[i].equals("NA")){
                         //if the entry is given
                         atts.add(data[i].toUpperCase());
@@ -337,6 +338,7 @@ public class Closet{
                 ArrayList<Shirt> tempShirts = searchShirts(attribute);
                 ArrayList<Pants> tempPants = searchPants(attribute);
 
+
                 tempList.addAll(tempShirts);
                 tempList.addAll(tempPants);
 
@@ -459,23 +461,17 @@ public class Closet{
 
 
     public ArrayList getAllSearch(ArrayList<Article> givenList){
-    
+        //Returns an arrayList of Articles from givenList (search results)
+
         ArrayList list = new ArrayList<>();
 
-        //System.out.println(myShirts.size());
-
         for (Article s : givenList){
-            ArrayList<String> newList = s.getDescriptors();
-            list.add(newList);
+            //add the arrayList of descriptors for each Article
+            list.add(s.getDescriptors());
         }
-        // for (Pants p : list){
-        //     ArrayList<String> newList = p.getDescriptors();
-        //     list.add(newList);
-        // }
 
+        //return the ArrayList of ArrayLists [articles[descriptors]]
         return list;
-
-
     }
                 
             

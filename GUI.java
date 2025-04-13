@@ -3,9 +3,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.naming.directory.SearchResult;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import java.awt.GridLayout; 
 import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
@@ -35,12 +37,16 @@ public class GUI implements ActionListener{
     private JPanel entryPanel;
     private JPanel success;
     private JPanel searchPanel;
+    private JPanel searchResultPanel;
+    private JPanel topButtons;
+    private JPanel bottomButtons;
 
     //buttons
     private JButton addNew;
     private JButton addNewS;
     private JButton addNewP;
-    private JButton confirmNew;
+    private JButton confirmNewShirt;
+    private JButton confirmNewPants;
     private JButton seeAll;
     private JButton back;
     private JButton nameButton;
@@ -56,6 +62,10 @@ public class GUI implements ActionListener{
     private JTextField location;
     private JTextField sleeveLength;
     private JTextField shirtLength;
+    private JTextField rise;
+    private JTextField length;
+    private JTextField material;
+    private JTextField style;
 
     private JTextField giveAttribute;
     private JComboBox<String> artOpt;
@@ -81,10 +91,12 @@ public class GUI implements ActionListener{
 
         addNewS = new JButton("Add New Shirt");
         addNewP = new JButton("Add New Pants");
-        confirmNew = new JButton("Confirm New Entry");
+        confirmNewShirt = new JButton("Confirm New Entry (Shirt)");
+        confirmNewPants = new JButton("Confirm New Entry (Pants)");
 
         nameButton = new JButton("Continue");
         search = new JButton("Search");
+        searchArticles = new JButton("Search Articles");
 
         //setting up textboxes
         name = new JTextField();
@@ -105,17 +117,16 @@ public class GUI implements ActionListener{
 
         //Main panel
         homePanel = new JPanel();
-        homePanel.setPreferredSize(new Dimension(500, 400));
+        homePanel.setPreferredSize(new Dimension(600, 600));
         homePanel.add(addNew);
         homePanel.add(seeAll);
 
         homeContainer.add(homePanel, "Main Menu");
 
-        //set up see all panel
-        seeAllPanel = new JPanel(new GridBagLayout());
-        seeAllPanel.setPreferredSize(new Dimension(300, 300));
-        seeAllPanel.setLayout( new GridBagLayout());
-
+        seeAllPanel = new JPanel();
+        //sets up the buttons
+        showAllsetUp();
+        //add to the container
         homeContainer.add(seeAllPanel, "See All");
         
 
@@ -137,7 +148,9 @@ public class GUI implements ActionListener{
 
 
         //set up new Pants panel
-        addNewPPanel = new JPanel(new GridBagLayout());
+        addNewPPanel = new JPanel();
+        //set up the panel
+        addNewPants();
         homeContainer.add(addNewPPanel, "Add New Pants");
 
         //set up the successfully added panel
@@ -149,7 +162,14 @@ public class GUI implements ActionListener{
         //set up search panel
         searchPanel = new JPanel();
         searchPanel.setLayout( new GridLayout(4, 2));
+        searchPanelSetUp();
         homeContainer.add(searchPanel, "Search");
+
+
+        //set up search results panel
+        searchResultPanel = new JPanel();
+        // searchResultPanel.setLayout ( new GridLayout(10, 4));
+        homeContainer.add(searchResultPanel, "Search Results");
 
 
 
@@ -159,12 +179,15 @@ public class GUI implements ActionListener{
         back.addActionListener(this);
         addNewS.addActionListener(this);
         addNewP.addActionListener(this);
-        confirmNew.addActionListener(this);
+        confirmNewShirt.addActionListener(this);
+        confirmNewPants.addActionListener(this);
         search.addActionListener(this);
+        searchArticles.addActionListener(this);
 
 
         frame.add(homeContainer);
         cl.show(homeContainer, "Main Menu");
+        
 
         frame.setSize(500,600);
         frame.setTitle("First Try");
@@ -184,7 +207,6 @@ public class GUI implements ActionListener{
 
    @Override
     public void actionPerformed(ActionEvent e){
-        
 
         // if (e.getSource() == nameButton){
         //     String nameFinal = name.getText();
@@ -192,125 +214,149 @@ public class GUI implements ActionListener{
         // }
 
         if (e.getSource() == addNew){
-            
+            //set up & show panel to Add a new Article
+                addNewPanelSetUp();
                 cl.show(homeContainer, "Add New");
-                addNewPanel.add(back, BorderLayout.NORTH);
-                addNewPanel.add(addNewS, BorderLayout.CENTER);
-                addNewPanel.add(addNewP, BorderLayout.SOUTH);
-                // addNewItem();
             }
         else if (e.getSource() == seeAll){
-                showAll();
+            //sets up & displays all Articles
+                //showAll();
+                //puts the back button at the top
+                topButtons.add(back);
                 cl.show(homeContainer, "See All");
 
             }
         else if (e.getSource() == back){
-                System.out.println("Home button pressed");
+            //returns to home screen
+                // System.out.println("Home button pressed");
                 cl.show(homeContainer, "Main Menu");
             }
         else if (e.getSource() == addNewS){
-            addNewItem();
+            //sets up add New Shirt panel
+            addNewShirt();
             cl.show(homeContainer, "Add New Shirt");
         } 
         else if (e.getSource() == addNewP){
-            addNewPants();
+            //sets up & displays add new Pants panel
+            //NOT DONE YET
+            bottomButtons.add(back);
+            cl.show(homeContainer, "Add New Pants");
         }
-        else if (e.getSource() == confirmNew){
-            //enter a new article
-            confirmEntry();
+        else if (e.getSource() == confirmNewShirt){
+            //enter a new shirt
+            confirmEntry("Shirt");
+            cl.show(homeContainer, "Successfully Added");
+        }
+        else if (e.getSource() == confirmNewPants){
+            //enter new pants
+            confirmEntry("Pants");
             cl.show(homeContainer, "Successfully Added");
         }
         else if (e.getSource() == search){
             //displays the search panel
-            searchPanelSetUp();
+            searchPanel.add(back);
             cl.show(homeContainer, "Search");
+        }
+        else if (e.getSource() == searchArticles){
+            //displays the search panel
+            System.out.println("searching articles");
+            searchClosetDisplay();
+            cl.show(homeContainer, "Search Results");
         }
     }
 
 
+    public void addNewPanelSetUp(){
+        //sets up the addNew panel with necessary buttons
 
-    public void showAll(){
-        //runs through all articles in CSV file and displays them
-        //in a 3 column grid (using the closet class)
+        addNewPanel.add(back, BorderLayout.NORTH);
+        addNewPanel.add(addNewS, BorderLayout.CENTER);
+        addNewPanel.add(addNewP, BorderLayout.SOUTH);
 
-        //set up as a gridbaglayout
-        GridBagConstraints c = new GridBagConstraints();
+    }
 
-        c.fill = GridBagConstraints.HORIZONTAL;
+    public void showAllsetUp(){
+        //sets up the panel to show all articles
+        //back button gets added in action performed
 
-        c.insets = new Insets(0, 10, 0, 10);
-
-        c.anchor = GridBagConstraints.FIRST_LINE_START;
-        c.gridx = 3;
-        c.gridy = 0;
-        c.gridwidth = 2;
-        seeAllPanel.add(back, c);
-
-        //****** */
-        //add a scroll button
-        //****** */
-
-        c.gridx = 2;
-        c.gridy = 0;
-        seeAllPanel.add(search, c);
-        
+        // get info from CSV
         ArrayList<ArrayList> myData = myCSV.displayArticles();
 
         int numArticles = myData.size();
         JLabel counter = new JLabel("Total Articles: " + Integer.toString(numArticles));
-        c.gridx = 0;
-        c.gridy = 0;
-        seeAllPanel.add(counter, c);
 
-   
+        //create container panel
+        seeAllPanel.setLayout( new BorderLayout());
+
+        //create a JPanel to hold back & search buttons (top)
+        topButtons = new JPanel();
+        topButtons.setLayout( new BoxLayout( topButtons, BoxLayout.X_AXIS));
+
+        //add buttons (back button may need to be added in actionPerformed)
+        topButtons.add(search);
+        topButtons.add(Box.createRigidArea(new Dimension (10, 10)));
+        //topButtons.add(back);
+
+        //create a JPanel to hold the items with a scroll bar
+        JPanel holdItems = new JPanel();
+        holdItems.setLayout ( new GridLayout (0, 3, 10, 10));
+        holdItems.setPreferredSize ( new Dimension (seeAllPanel.getWidth() - 20, seeAllPanel.getHeight() - 40));
+
+        //create a JPanel to show number of articles (bottom)
+        JPanel bottom = new JPanel();
+        bottom.setLayout( new BoxLayout(bottom, BoxLayout.X_AXIS));
+        bottom.add(counter);
+
+        //add info to scroll panel
         for (int i = 0; i < myData.size(); i++){
             //loop through each article 
             //get the article type for the header
             String tempString = myData.get(i).get(0) + ": \n";
 
-            for (int j = 0; j < myData.get(0).size(); j++){
+            for (int j = 1; j < myData.get(0).size(); j++){
                 //loop through the attributes of each article
                 tempString = tempString + myData.get(i).get(j) + "\n";
                 }
             
-            //set up the grid format
-
-            c.insets = new Insets(10, 10, 10, 10);
-            c.anchor = GridBagConstraints.CENTER;
-            
-            c.gridwidth = 1;
-            c.ipady = 90;
-            c.weightx = 1;
-            c.weighty = 0.5;
-            c.gridx = i % 3;
-            c.gridy = (i / 3) + 1;
-
-            //display in a JTextArea
-            JTextArea temp = new JTextArea(tempString);
-            seeAllPanel.add(temp, c);
-            
+            holdItems.add(new JTextArea(tempString));
             }
+        
+        //add scroll panel to holdItems panel
+        JScrollPane scrollPane = new JScrollPane(holdItems);
 
-        //display this card
-
-        //JScrollPane scrollPane = new JScrollPane(seeAllPanel);
-        //homeContainer.add(scrollPane);
+        //add all sub-panels to seeAllPanel
+        seeAllPanel.add(topButtons, BorderLayout.PAGE_START);
+        seeAllPanel.add(scrollPane, BorderLayout.CENTER);
+        seeAllPanel.add(bottom, BorderLayout.PAGE_END);
 
     }
 
 
-    public void confirmEntry(){
+    public void confirmEntry(String articleType){
         //takes the text boxes and adds the info to csv
+        //slightly changes based on the type of Article added
 
         String filename = name.getText();
 
+        System.out.println("file found");
 
-        System.out.println("file created");
+        //create an empty arraylist to hold the info later
+        ArrayList<JTextField> paramsBase = new ArrayList<>();
+        String[] params;
 
-        //create an arraylist of the attributes
-        ArrayList<JTextField> paramsBase = new ArrayList<>(Arrays.asList(brand, size, misc, location, sleeveLength, shirtLength));
-        //create an array of the categories
-        String[] params = {"Color", "Brand", "Size", "Misc", "Location", "Sleeve Length", "Shirt Length"};
+        if (articleType.equals("Shirt")){
+        //create an arraylist & parameter array for shirts
+            //create an arraylist of the attributes
+            paramsBase = new ArrayList<>(Arrays.asList(color, brand, size, misc, location, sleeveLength, shirtLength));
+            //create an array of the categories
+            params = new String[] {"Color", "Brand", "Size", "Misc", "Location", "Sleeve Length", "Shirt Length"};
+        } else {
+            //if the articleType is Pants
+            System.out.println("Article is pants");
+            paramsBase = new ArrayList<>(Arrays.asList(color, brand, size, misc, location, rise, length, style, material));
+            //create an array of the categories
+            params = new String[] {"Color", "Brand", "Size", "Misc", "Location", "Rise", "Length", "Style", "Material"};
+        }
 
         for (JTextField s : paramsBase){
             //for each of the attributes
@@ -327,7 +373,7 @@ public class GUI implements ActionListener{
         }
 
         //take the info from the text fields and add to CSV
-        if (myCSV.addShirtCSV(params)){
+        if (myCSV.addAnyArticleCSV(params, articleType)){
             //if added successfully (returns true)
             successPanel(true);
             //runs the panel for added correctly
@@ -429,15 +475,75 @@ public class GUI implements ActionListener{
             success.add(seeAll, c);
 
         }
-
-        // cl.show(homeContainer, "Successfully Added");
     }
 
 
     public void addNewPants(){
-        //GridBagConstraints c = new GridBagConstraints();
-        addNewPPanel.add(back);
-        cl.show(homeContainer, "Add New Pants");
+        //sets up the panel for adding new pants
+        //back button is added in action performed
+        addNewPPanel.setLayout( new BorderLayout());
+
+        //make a subpanel for the top (name & title)
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout( new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        //add name and label to topPanel
+        topPanel.add( new JLabel ("Name: " + nameSet));
+        topPanel.add( Box.createRigidArea(new Dimension(100, 10)));
+        JLabel title = new JLabel("ADD NEW PANTS:");
+        title.setBackground(Color.PINK);
+        title.setOpaque(true);
+        topPanel.add( title);
+
+        //center panel to hold the labels & text boxes
+        JPanel center = new JPanel();
+        center.setLayout( new GridLayout(0, 2, 10, 10));
+
+        //make a sub panel for the add & back buttons
+        //(back button is added in action performed)
+        bottomButtons = new JPanel();
+        bottomButtons.setLayout( new BoxLayout( bottomButtons, BoxLayout.X_AXIS));
+
+        //add confirm search button
+        bottomButtons.add(confirmNewPants);
+        //add a space between search & back
+        bottomButtons.add( Box.createRigidArea(new Dimension (10, 10)));
+
+
+        //info setup:
+        //make the array of labels
+        String[] compLabels = {"Color: ", "Brand: ", "Size: ", "Misc: ", 
+        "Location: ", "Rise: ", "Length: ", "Material: ", "Style: "};
+
+        //set up the text fields
+        color = new JTextField("e.g. Blue");
+        brand = new JTextField("e.g. Zara");
+        size = new JTextField("e.g. 28");
+        misc = new JTextField("e.g. Ripped");
+        location = new JTextField("e.g. Drawer");
+        rise = new JTextField("e.g. Low");
+        length = new JTextField("e.g. Long");
+        material = new JTextField("e.g. Denim");
+        style = new JTextField("e.g. Mom");
+
+        //make an array of the text fields
+        JTextField[] compText = {color, brand, size, misc, location, rise, length,
+            material, style};
+
+        //add the info to the center panel (each row is label, text box)
+        for (int i = 0; i < compText.length; i++){
+            //loop through length of the arrays
+            //add the labels
+            center.add( new JLabel(compLabels[i]));
+            //set the text box color to gray
+            compText[i].setForeground(Color.GRAY);
+            //add the text boxes
+            center.add(compText[i]);
+        }
+
+        //add the subPanels to the parent Panel (addNewPPanel)
+        addNewPPanel.add(topPanel, BorderLayout.PAGE_START);
+        addNewPPanel.add(center, BorderLayout.CENTER);
+        addNewPPanel.add(bottomButtons, BorderLayout.PAGE_END);
     }
 
 
@@ -445,52 +551,108 @@ public class GUI implements ActionListener{
         //sets up the JPanel for searching items
         //comes up if the search/filter button is pressed
 
-        //set up formatting here
-
+        //Attribute label & text field
         JLabel attribute = new JLabel("Type Attribute: ");
         searchPanel.add(attribute);
 
-        giveAttribute = new JTextField("e.g. Blue");
+        giveAttribute = new JTextField("black");
         giveAttribute.setForeground(Color.GRAY);
         searchPanel.add(giveAttribute);
 
+        //article type label 
         JLabel articleCat = new JLabel("Select Article Type: ");
         searchPanel.add(articleCat);
 
+        //Article drop down menu
         String[] articleOptions = {"All", "Shirts", "Pants"};
         artOpt = new JComboBox<String>(articleOptions);
         searchPanel.add(artOpt);
 
+        //category label
         JLabel category = new JLabel("Select Category: ");
         searchPanel.add(category);
 
+        //category drop down menu
         String[] categoryOptions = {"None", "Color", "Brand", "Size", "Location", "Misc", "Shirt Length",
             "Sleeve Length", "Pant Rise", "Pant Length", "Pant Style", "Pant Material"};
         catOpt = new JComboBox<String>(categoryOptions);
         searchPanel.add(catOpt);
 
+        //add the back button
         searchPanel.add(back);
 
-        searchArticles = new JButton("Search Articles");
+        //add the button to search 
         searchPanel.add(searchArticles);
-
 
     }
 
     public void searchClosetDisplay(){
         //sets up the display panel for searching
+        //using nested JPanels for formatting & scrolling 
+
+        //outer panel is generic BorderLayout
+        searchResultPanel.setLayout(new BorderLayout());
+
+        //get the given fields from the search page
         String attribute = giveAttribute.getText();
         String articleType = (String) artOpt.getSelectedItem();
         String categoryType = (String) catOpt.getSelectedItem();
 
-        ArrayList results = myCSV.displaySearch(attribute, categoryType, articleType);
+        //get the arrayList of results from CSVReader
+        ArrayList<ArrayList> results = myCSV.displaySearch(attribute, categoryType, articleType);
 
+        //get the total number of results shown
+        int numArticles = results.size();
+        JLabel counter = new JLabel("Total Articles: " + Integer.toString(numArticles));
+
+        //add the back button at the top
+        searchResultPanel.add(back, BorderLayout.PAGE_START);
         
+        //create new JPanel to be nested
+        JPanel searchResNest = new JPanel();
+        searchResNest.setLayout (new GridLayout(0, 3, 10, 10));
+        searchResNest.setPreferredSize(new Dimension ( searchResultPanel.getWidth(), searchResultPanel.getHeight() - (searchResultPanel.getHeight()/10)));
+
+        //****** in case I want to add a label that says results for: ***** */
+        // String resultString = "Showing Results for: " + articleType + " , " + categoryType 
+        // + " , " + attribute;
+
+        // searchResNest.add(new JLabel("Showing Results for: " + attribute));
+        // searchResNest.add(new JLabel("Article Type: " + articleType));
+        // searchResNest.add(new JLabel(" Category: " + categoryType));
+
+   
+        for (int i = 0; i < results.size(); i++){
+            //loop through each article 
+            //get the article type for the header
+            String tempString = results.get(i).get(0) + ": \n";
+
+            for (int j = 0; j < results.get(0).size(); j++){
+                //loop through the attributes of each article
+
+                tempString = tempString + results.get(i).get(j) + "\n";
+
+                }
+
+            //display in a JTextArea
+            JTextArea temp = new JTextArea(tempString);
+            //add to the inner panel
+            searchResNest.add(temp);
+            
+            }
+        //add inner panel to a scrollPane
+        JScrollPane scrollPane = new JScrollPane(searchResNest);
+        //add scrollPane to the main panel
+        searchResultPanel.add(scrollPane, BorderLayout.CENTER);
+        //add a total # of search results at the bottom
+        searchResultPanel.add(counter, BorderLayout.PAGE_END);
+
     }
 
     
 
-    public void addNewItem(){
+    public void addNewShirt(){
+        //adds a new Shirt
 
         //set up the layout
         
@@ -568,7 +730,7 @@ public class GUI implements ActionListener{
         c.weighty = 1;
         c.weightx = 1;
         c.gridwidth = 3;
-        addNewSPanel.add(confirmNew, c);
+        addNewSPanel.add(confirmNewShirt, c);
 
 
         // cl.show(homeContainer, "Add New Shirt");
