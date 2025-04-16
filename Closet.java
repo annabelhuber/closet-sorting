@@ -145,8 +145,8 @@ public class Closet{
         String color = attributes.get(0);
         String brand = attributes.get(1);
         String size = attributes.get(2);
-        String sleeveLength = attributes.get(5);
-        String shirtLength = attributes.get(6);
+        String sleeveLength = attributes.get(6);
+        String shirtLength = attributes.get(5);
         String misc = attributes.get(3);
         String location = attributes.get(4);
 
@@ -415,6 +415,144 @@ public class Closet{
     }
 
 
+    public ArrayList<Article> refineSearch(String[] attributes, String[] categories){
+        //similar to search closet but uses lists as parameters
+        //can run a search with multiple criteria
+        //ArticleType MUST be first attribute/category (can be none)
+
+        //create an empty arraylist to return at the end
+        ArrayList<Article> tempList = new ArrayList<>();
+        //create an arraylist to hold the initial search results
+        ArrayList<Article> tempList1 = new ArrayList<>();
+
+        //find the initial results first (assign tempList1)
+        categories[0].toUpperCase();
+        attributes[0].toUpperCase();
+
+        if (categories[0].equals("ARTICLETYPE") && attributes[0].equals("SHIRT")){
+            //if only looking for shirts, make tempList1 only shirts
+            tempList1.addAll(myShirts);
+        } else if (categories[0].equals("ARTICLETYPE") && attributes[0].equals("PANTS")){
+            //same for pants
+            tempList1.addAll(myPants);
+        } else {
+            //if not specified articleType, add both to tempList1
+            tempList1.addAll(myShirts);
+            tempList1.addAll(myPants);
+        }
+        if (attributes.length > 1){
+            //if there are more parameters than just article type
+
+            for (Article j : tempList1){
+                //loop through every article in initial tempList
+                int counter = 1;
+
+                for (int i = 1; i < attributes.length; i++){
+                    //loops through every set of attributes/categories, starting with the one after ArticleType
+                    categories[i] = categories[i].toUpperCase();
+                    attributes[i] = attributes[i].toUpperCase();
+                   
+
+                    if ( j.getOneDescriptor(categories[i]).equals(attributes[i])){
+                        //if the attribute is a match
+                        //add to counter
+                        counter++;
+                       
+                        if (counter == (attributes.length)) {
+                            //if the article is a match for all attributes
+                            //add to tempList
+                            tempList.add(j);
+                        }
+                        continue;
+                    } else {
+                        break;
+                    }
+
+                }
+            }
+        } else {
+            //if articleType is the only parameter
+            tempList.addAll(tempList1);
+        }
+
+        if (tempList.size() < 1){
+            //if nothing was found
+            System.out.println("No Matching Articles Found");
+        }
+        return tempList;
+
+    }
+
+
+    public ArrayList<Article> refineSearch(ArrayList<String> attributes, ArrayList<String> categories){
+        //similar to search closet but uses lists as parameters
+        //can run a search with multiple criteria
+        //ArticleType MUST be first attribute/category (can be none)
+
+        //create an empty arraylist to return at the end
+        ArrayList<Article> tempList = new ArrayList<>();
+        //create an arraylist to hold the initial search results
+        ArrayList<Article> tempList1 = new ArrayList<>();
+
+        //find the initial results first (assign tempList1)
+        categories.get(0).toUpperCase();
+        attributes.get(0).toUpperCase();
+
+        if (categories.get(0).equals("ARTICLETYPE") && attributes.get(0).equals("SHIRT")){
+            //if only looking for shirts, make tempList1 only shirts
+            tempList1.addAll(myShirts);
+        } else if (categories.get(0).equals("ARTICLETYPE") && attributes.get(0).equals("PANTS")){
+            //same for pants
+            tempList1.addAll(myPants);
+        } else {
+            //if not specified articleType, add both to tempList1
+            tempList1.addAll(myShirts);
+            tempList1.addAll(myPants);
+        }
+        if (attributes.size() > 1){
+            //if there are more parameters than just article type
+
+            for (Article j : tempList1){
+                //loop through every article in initial tempList
+                int counter = 1;
+
+                for (int i = 1; i < attributes.size(); i++){
+                    //loops through every set of attributes/categories, starting with the one after ArticleType
+                    categories.set(i, categories.get(i).toUpperCase());
+                    attributes.set(i, attributes.get(i).toUpperCase());
+                
+
+                    if ( j.getOneDescriptor(categories.get(i)).equals(attributes.get(i))){
+                        //if the attribute is a match
+                        //add to counter
+                        counter++;
+                     
+                        if (counter == (attributes.size())) {
+                            //if the article is a match for all attributes
+                            //add to tempList
+                            tempList.add(j);
+                        }
+                        continue;
+                    } else {
+                        break;
+                    }
+
+                }
+            }
+        } else {
+            //if articleType is the only parameter
+            tempList.addAll(tempList1);
+        }
+
+        if (tempList.size() < 1){
+            //if nothing was found
+            System.out.println("No Matching Articles Found");
+        }
+        return tempList;
+
+    }
+
+
     public void showShirts(){
         //displays all the shirts in the closet and the total number
 
@@ -448,26 +586,6 @@ public class Closet{
         System.out.println("Total: " + num);
     }
 
-
-    // public void showAll(ArrayList list){
-    //     //displays all the articles in the given list + the total numer
-    //     int shirtCounter = 0;
-    //     int pantsCounter = 0;
-
-    //     for (Object s : list){
-
-    //         if (s.getClass().getName() == "Shirt"){
-    //             s.display();
-    //             shirtCounter++;
-    //         } else if (s.getClass().getName() == "Pants"){
-    //             s.display();
-    //             pantsCounter++;
-    //         }
-            
-    //     }
-
-    //     System.out.println("Total Shirts: " + shirtCounter + " Total Pants: " + pantsCounter);
-    // }
 
 
     public ArrayList getShirts(){
@@ -559,18 +677,26 @@ public class Closet{
         // s.addPants("blue", "zara", "6", "denim", "high", "long", "baggy", "ripped", "drawer");
 
 
+        // s.readCSV("testing.csv");
+
+        // //s.showShirts();
+
+        // ArrayList<Article> searching = s.searchCloset("black", "color");
+        
+        // for (Article a : searching){
+        //     a.display();
+        // }
         s.readCSV("testing.csv");
 
-        //s.showShirts();
+        // ArrayList<String> atts = new ArrayList<>(Arrays.asList("Shirt", "cropped"));
+        // // String[] cats = {"articletype", "location"};
+        // ArrayList<String> cats = new ArrayList<>(Arrays.asList("articletype", "shirtlength"));
 
-        ArrayList<Article> searching = s.searchCloset("black", "color");
-        
-        for (Article a : searching){
-            a.display();
-        }
+        // ArrayList<Article> refineSearch = s.refineSearch(atts, cats);
 
+        // System.out.println(refineSearch.size());
 
-        // for (Shirt a : s.myShirts){
+        // for (Article a : refineSearch){
         //     a.display();
         // }
 

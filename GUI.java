@@ -220,7 +220,6 @@ public class GUI implements ActionListener{
             }
         else if (e.getSource() == seeAll){
             //sets up & displays all Articles
-                //showAll();
                 //puts the back button at the top
                 topButtons.add(back);
                 cl.show(homeContainer, "See All");
@@ -354,11 +353,8 @@ public class GUI implements ActionListener{
                 }
 
             JTextArea tempArea = new JTextArea(tempString);
-            //System.out.println("Row num" + myData.get(i).size());
-            //tempArea.setRows(myData.get(i).size());
-
+            tempArea.setRows(myData.get(i).size());
             holdItems.add(tempArea);
-            //holdItems.setPreferredSize(new Dimension (seeAllPanel.getWidth() - 20, tempArea.getHeight() * 3));
             }
         
         //add scroll panel to holdItems panel
@@ -777,6 +773,43 @@ public class GUI implements ActionListener{
 
 
         // cl.show(homeContainer, "Add New Shirt");
+
+    }
+
+
+    public void refineDisplay(){
+        //sets up a panel to refine the display (alternative to searching)
+
+        // **** add this to beginning
+            // JButton refineResults;
+            // refineResults = new JButton("Refine Results");
+            // refineResults.addActionListener(this);
+
+            // JPanel refinedSearchPanel = new JPanel();
+            // refineDisplay();
+            // homeContainer.add(refinedSearchPanel, "Refine");
+        //******* end  */
+
+        //this function is triggered by pressing refine Jbutton on showAll
+
+        //set up drop down list for each category : articleType, color, brand, size, misc, 
+            //location, rise, material, style, length, sleeveLength, shirtLength
+        
+        //default for dropdowns is "None"
+
+        //add a button to calculate the refined results
+
+    }
+
+
+    public void refinedClosetDisplay(){
+        //sets up a panel (similar to searchClosetDisplay) showing only results
+
+        //label at the top showing what the parameters are
+
+        //show the articles
+
+        //button to clear parameters (brings back to show all)
 
     }
 

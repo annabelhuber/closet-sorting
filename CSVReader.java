@@ -224,12 +224,12 @@ public class CSVReader{
 
             for (int j = 6; j < 8; j++){
                 tempVar[j] = "NA";
-                counter++;
             }
 
             for (int p = 8; p < 12; p++){
                 tempVar[p] = attributes[counter];
                 counter++;
+ 
             }
         }
         return tempVar;
@@ -252,8 +252,10 @@ public class CSVReader{
             }
             
         } else if (attributes[0].equals("PANTS")){
+            int counter = 0;
             for (int i = 0; i < 6; i++){
                 tempVar[i] = attributes[i] + ",";
+                counter++;
             }
 
             for (int j = 6; j < 8; j++){
@@ -261,7 +263,8 @@ public class CSVReader{
             }
 
             for (int p = 8; p < 12; p++){
-                tempVar[p] = attributes[p - 2] + ",";
+                tempVar[p] = attributes[counter] + ",";
+                counter++;
             }
         }
         return tempVar;
@@ -288,7 +291,7 @@ public class CSVReader{
         //input: attribute
 
         //reread the CSV in case articles were added/deleted
-        c.readCSV(filepath);
+        c.reReadCSV(filepath, filename);
 
         ArrayList<Article> searched = c.searchCloset(attribute);
 
@@ -304,12 +307,44 @@ public class CSVReader{
         //input: attribute, category, article type
 
         //reread the CSV in case articles were added/deleted
-        c.readCSV(filepath);
+        c.reReadCSV(filepath, filename);
 
         ArrayList<Article> searched = c.searchCloset(attribute, category, articleType);
         //searched.get(0).display();
 
         ArrayList results = c.getAllSearch(searched);
+
+        return results;
+    }
+
+
+    public ArrayList refineSearchDisplay(String[] attributes, String[] categories){
+        //uses Closet method refineSearch to filter 1+ searches
+        //returns an arrayList of matching searches
+        //attributes[0] must be articleType
+
+        //use arraylists to only hold cats/atts with content other than none
+        ArrayList<String> atts = new ArrayList<>();
+        ArrayList<String> cats = new ArrayList<>();
+
+        //add the article type
+        atts.add(attributes[0]);
+        cats.add(categories[0]);
+
+        for (int i = 1; i < attributes.length; i++){
+            //remove all not selected categories
+            if (!attributes[i].equals("None")){
+                //if a parameter is given
+                atts.add(attributes[i]);
+                cats.add(categories[i]);
+            }
+        }
+
+        c.reReadCSV(filepath, filename);
+
+        ArrayList<Article> filtered = c.refineSearch(atts, cats);
+
+        ArrayList results = c.getAllSearch(filtered);
 
         return results;
     }
@@ -433,7 +468,7 @@ public class CSVReader{
         // createNewCSV("testcloset");
         // // System.out.println(csvName("testcloset"));
         String[] shirt1 = { "SHIRT", "blue", "aritzia", "M", "tie front", "drawer", "cropped", "tee"};
-        String[] shirt2 = {"SHIRT", "gray", "artitzia", "M", "knit", "bag", "long", "long"};
+        String[] shirt2 = {"SHIRT", "gray", "aritzia", "M", "knit", "bag", "long", "long"};
         String[] pant2 = {"PANTS", "blue", "lucky", "28", "none", "Mike's", "low", "long", "flare", "denim"};
         String[] shirt3 = {"SHIRT", "black", "urban outfitters", "M", "lace trim", "drawer", "cropped", "tank"};
         String[] pant3 = {"PANTS", "black", "abercrombie", "28", "90's", "Mike's", "low", "long", "baggy", "denim"};
@@ -454,16 +489,21 @@ public class CSVReader{
         // myCSV.addArticleCSV(shirt5);
         // myCSV.addArticleCSV(pant3);
         // myCSV.addArticleCSV(pant4);
+        // myCSV.addArticleCSV(pant5);
         //myCSV.addAnyArticleCSV(pant5, "Pants");
 
         //myCSV.deleteLine(9);
+        String[] atts = {"Shirt", "M", "cropped"};
+        String[] cats = {"ArticleType", "size", "shirtLength"};
+
+
+        // ArrayList myList = myCSV.refineSearchDisplay(atts, cats);
+        // System.out.println(myList.toString());
         
 
         //ArrayList<ArrayList> trial = myCSV.displaySearch("black", "None", "All");
         
         //System.out.println(trial.get(1).size());
-        ArrayList myList = myCSV.displayArticles();
-        System.out.println(myList.size());
         //myCSV.openCSV();
 
         //ArrayList<ArrayList> trial2 = myCSV.displayArticles();
