@@ -8,6 +8,7 @@ import java.util.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileReader;
+import java.io.File;
 
 
 public class Closet{
@@ -61,6 +62,63 @@ public class Closet{
             }
         }catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public void reReadCSV(String filepath, String filename){
+        //rereads the csv to make sure nothing has been changed
+        File csvFile = new File(filepath);
+
+        if (!csvFile.exists()){
+            //if the file does not exist, run readCSV instead
+            this.readCSV(filepath);
+        } else{
+            //if the file does already exist, continue
+            //make an instance of CSVReader to compare
+            CSVReader myCSVReader = new CSVReader(filename);
+
+            try (BufferedReader br = new BufferedReader(new FileReader(filepath))){
+                String line;
+    
+                //skip first line
+                br.readLine();
+    
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(",");
+                    //System.out.println("Reading data in Closet" + Arrays.toString(data));
+                    ArrayList<String> atts = new ArrayList<>();
+
+                    if (myCSVReader.checkDuplicates(data)){
+                        //System.out.println("True");
+                        //if line is not already in the CSV file, add it
+                        for (int i = 0; i< data.length; i++){
+                            
+                            if (!data[i].equals("NA")){
+                                //if the entry is given
+                                atts.add(data[i].toUpperCase());
+                                }
+                            }
+            
+                            if (data[0].equals("SHIRT")){
+                                //if the article is a shirt
+                                atts.remove(0);
+                                addShirt(atts);
+                            } else if (data[0].equals("PANTS")){
+                                //if the article is pants
+                                atts.remove(0);
+                                addPants(atts);
+                            } 
+                    } else {
+                        //if the line already exists
+                        //System.out.println("false");
+                        continue;
+                    }
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

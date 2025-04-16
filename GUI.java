@@ -118,11 +118,11 @@ public class GUI implements ActionListener{
         //Main panel
         homePanel = new JPanel();
         homePanel.setPreferredSize(new Dimension(600, 600));
-        homePanel.add(addNew);
-        homePanel.add(seeAll);
+        homePanelSetUp();
 
         homeContainer.add(homePanel, "Main Menu");
 
+        //see/show All panel
         seeAllPanel = new JPanel();
         //sets up the buttons
         showAllsetUp();
@@ -266,6 +266,40 @@ public class GUI implements ActionListener{
     }
 
 
+
+    public void homePanelSetUp(){
+        //setup the home panel
+        //using a boxlayout
+        homePanel.setLayout(new BoxLayout (homePanel, BoxLayout.PAGE_AXIS));
+        homePanel.setBackground(Color.PINK);
+        homePanel.setOpaque(true);
+
+        //create a welcome banner with name of CSV file
+        String welcome = "Welcome, " + nameSet;
+        JLabel welcomeLabel = new JLabel(welcome);
+        welcomeLabel.setFont( new Font("Serif", Font.PLAIN, 25));
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        //add welcome to the layout
+        homePanel.add(welcomeLabel, BorderLayout.PAGE_START);
+
+        //center all the components
+        welcomeLabel.setAlignmentX(homePanel.CENTER_ALIGNMENT);
+        addNewS.setAlignmentX(homePanel.CENTER_ALIGNMENT);
+        addNewP.setAlignmentX(homePanel.CENTER_ALIGNMENT);
+        seeAll.setAlignmentX(homePanel.CENTER_ALIGNMENT);
+
+        //add a space between the label and the buttons
+        homePanel.add(Box.createRigidArea(new Dimension (10, 30)));
+
+        //add buttons for add new shirt, pants, see all
+        homePanel.add(addNewS);
+        homePanel.add(addNewP);
+        homePanel.add(seeAll);
+
+    }
+
+
     public void addNewPanelSetUp(){
         //sets up the addNew panel with necessary buttons
 
@@ -300,7 +334,8 @@ public class GUI implements ActionListener{
         //create a JPanel to hold the items with a scroll bar
         JPanel holdItems = new JPanel();
         holdItems.setLayout ( new GridLayout (0, 3, 10, 10));
-        holdItems.setPreferredSize ( new Dimension (seeAllPanel.getWidth() - 20, seeAllPanel.getHeight() - 40));
+        //holdItems.setPreferredSize ( new Dimension (seeAllPanel.getWidth() - 20, seeAllPanel.getHeight() - 40));
+        
 
         //create a JPanel to show number of articles (bottom)
         JPanel bottom = new JPanel();
@@ -313,16 +348,24 @@ public class GUI implements ActionListener{
             //get the article type for the header
             String tempString = myData.get(i).get(0) + ": \n";
 
-            for (int j = 1; j < myData.get(0).size(); j++){
+            for (int j = 1; j < myData.get(i).size(); j++){
                 //loop through the attributes of each article
                 tempString = tempString + myData.get(i).get(j) + "\n";
                 }
-            
-            holdItems.add(new JTextArea(tempString));
+
+            JTextArea tempArea = new JTextArea(tempString);
+            //System.out.println("Row num" + myData.get(i).size());
+            //tempArea.setRows(myData.get(i).size());
+
+            holdItems.add(tempArea);
+            //holdItems.setPreferredSize(new Dimension (seeAllPanel.getWidth() - 20, tempArea.getHeight() * 3));
             }
         
         //add scroll panel to holdItems panel
+
         JScrollPane scrollPane = new JScrollPane(holdItems);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize( new Dimension (seeAllPanel.getWidth() - 20, seeAllPanel.getHeight() - 40));
 
         //add all sub-panels to seeAllPanel
         seeAllPanel.add(topButtons, BorderLayout.PAGE_START);

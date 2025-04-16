@@ -177,15 +177,9 @@ public class CSVReader{
         //read the file and check to see if the article already exists in file
         //returns FALSE if exists, return TRUE if not a duplicate
 
-        // System.out.println("Checking Duplicates");
-
         //converting given array to one comparable to the ones in the csv
         attributes = parseArrays(attributes);
 
-
-        // System.out.println("atts: ");
-        // System.out.println(Arrays.toString(attributes));
-        //System.out.println(attributes);
 
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))){
             String line;
@@ -196,10 +190,7 @@ public class CSVReader{
             while ((line = br.readLine()) != null){
                 //read all the lines
                 String[] data = line.split(",");
-                // System.out.println("data: " + Arrays.toString(data));
-                //System.out.println(br.readLine());
-                
-
+               
                 if (Arrays.equals(data, attributes)){
                     return false;
                 }
@@ -225,16 +216,20 @@ public class CSVReader{
             }
             
         } else if (attributes[0].equals("PANTS")){
+            int counter = 0;
             for (int i = 0; i < 6; i++){
                 tempVar[i] = attributes[i];
+                counter++;
             }
 
             for (int j = 6; j < 8; j++){
                 tempVar[j] = "NA";
+                counter++;
             }
 
             for (int p = 8; p < 12; p++){
-                tempVar[p] = attributes[p - 2];
+                tempVar[p] = attributes[counter];
+                counter++;
             }
         }
         return tempVar;
@@ -279,7 +274,7 @@ public class CSVReader{
         //returns an arraylist of the Articles stored
 
         //reread the CSV in case articles were added/deleted
-        c.readCSV(filepath);
+        c.reReadCSV(filepath, filename);
   
         ArrayList list = c.getAll();
 
@@ -467,8 +462,9 @@ public class CSVReader{
         //ArrayList<ArrayList> trial = myCSV.displaySearch("black", "None", "All");
         
         //System.out.println(trial.get(1).size());
-
-        myCSV.openCSV();
+        ArrayList myList = myCSV.displayArticles();
+        System.out.println(myList.size());
+        //myCSV.openCSV();
 
         //ArrayList<ArrayList> trial2 = myCSV.displayArticles();
         
